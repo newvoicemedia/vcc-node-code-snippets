@@ -19,7 +19,7 @@ icsClient.search(start, end)
         r => {
           [...Array(r.meta.pageCount).keys()].forEach(
               page => icsClient.search(start, end, page + 1)
-                  .then(r => icsClient.downloadPage(r.items))
+                  .then(r => icsClient._downloadPage(r.items))
           )
         },
         console.error);
