@@ -23,7 +23,9 @@ You can specify your own path in the `.env` file by adding:
 ```
 DOWNLOAD_FOLDER=PATH_TO_YOUR_DOWNLOAD_LOCATION
 ``` 
-
+If provided path relative, it will be created within project root folder.
+You can provide an absolute path as well. Application will try to create the folder before
+storing any content in it.
 ## Installation
 
 To run the application, you will need `npm` in version `6` or higher and `node` in version `10` or higher.
@@ -53,4 +55,8 @@ It returns a JSON file with two attributes. `items`is a list of interaction obje
 It's used by the `downloadPage` to get all content.
 
 You can also use the `downloadContent` method to save a binary file. 
-You will need to know the interaction GUID and the content key. 
+You will need to know the interaction GUID and the content key.
+
+All downloaded content files will have names like:
+`INTERACTION-GUID_CONTENT-KEY.[wav|json|webm]` for example:
+`a8eb14fe-939a-43ff-91ab-acca25cb3d0a_callRecording.wav`.

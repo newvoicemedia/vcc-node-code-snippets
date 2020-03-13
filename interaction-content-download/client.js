@@ -23,7 +23,22 @@ class IcsClient {
      * @param start ISO8601 date to search interactions from
      * @param end ISO8601 date to search interactions to
      * @param page Page number starting from 1
-     * @returns {PromiseLike<T | void>}
+     * @returns {PromiseLike<T | void>} Response contains an JSON object:
+     * {
+     *  "items" :[],
+     *  "meta": {
+     *    "page": 1,
+     *    "count": 25,
+     *    "pageCount": 14,
+     *    "totalCount": 359
+     *  }
+     * }
+     * "items" are used by IcsClient#downloadPage method.
+     * "meta" describes paging:
+     *  - "page": which page search is on
+     *  - "count": how many elements are on a page
+     *  - "pageCount": how many pages are there
+     *  - "totalCount": how many interactions were found in a given time period
      */
     search(start, end, page = 1) {
         return this._authenticate()
@@ -42,7 +57,8 @@ class IcsClient {
     }
 
     /**
-     * Download specific content of an interaction
+     * Download specific content of an interaction.
+     * Content will be downloaded to folder specified by IcsClient#_downloadFolder.
      * @param interactionId GUID of an interaction
      * @param contentKey Unique name of content within interaction
      * @returns {PromiseLike<T | void>}
@@ -68,7 +84,12 @@ class IcsClient {
         )
     }
 
-    _downloadPage(items) {
+    /**
+     * Downloads all from a list of items. Items are downloaded to folder  IcsClient#_downloadFolder
+     * @param items is a list of interactions and should be coming from IcsClient#search method.
+     * @private {PromiseLike<T | void>}
+     */
+    downloadPage(items) {
         items.forEach(i => this._downloadAllContent(i.guid, i.content));
     }
 
