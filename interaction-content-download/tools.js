@@ -6,7 +6,7 @@ function setupDownloadFolder() {
   if (!fs.existsSync(downloadFolder)) {
     fs.mkdirSync(downloadFolder, {recursive: true});
   }
-  console.log(`Downloading files to ${downloadFolder}`);
+  console.log(`Downloading files to '${downloadFolder}'`);
   return downloadFolder;
 }
 

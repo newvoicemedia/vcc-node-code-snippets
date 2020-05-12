@@ -5,27 +5,25 @@ and downloads all content to a folder.
 
 ## Setup
 You will need a Vonage account with client credentials generated for the `interaction-content:read` scope.
-Create a `.env` file in the project root with the following entries:
+Copy a `example.env` file to `.env`. Then edit the `.env` file to set up following entries:
  - `CLIENT_ID`: this is the Client ID from your credentials 
  - `CLIENT_SECRET`: this is the Client Secret from your credentials
  - `REGION`: The region where your account was created. Possible values are 
  EMEA - Europe, the Middle East and Africa, NAM - North America and APAC - Asia-Pacific.
+ - `DOWNLOAD_FOLDER`: by default, the application downloads files into the `download` 
+ folder located inside the project root. However, you can specify your own path. 
+ If provided path relative, it will be created within project root folder.
+ You can provide an absolute path as well. Application will try to create the folder before
+ storing any content in it.
  
- Example `.env` file:
- ```
+ Example of the `.env` file:
+```
 CLIENT_ID=3618db72-4836-45b6-9209-14b22b62a733
 CLIENT_SECRET=XBBu7UCs4Um4uVf3
 REGION=EMEA
-```
-
-By default, the application downloads files into the `download` folder located inside the project root. 
-You can specify your own path in the `.env` file by adding:
-```
-DOWNLOAD_FOLDER=PATH_TO_YOUR_DOWNLOAD_LOCATION
+DOWNLOAD_FOLDER=/downloads/contents
 ``` 
-If provided path relative, it will be created within project root folder.
-You can provide an absolute path as well. Application will try to create the folder before
-storing any content in it.
+
 ## Installation
 
 To run the application, you will need `npm` in version `6` or higher and `node` in version `10` or higher.
