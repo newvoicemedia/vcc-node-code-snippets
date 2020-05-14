@@ -38,18 +38,24 @@ to install all required dependencies.
 
 To run the example execute
 ```
-npm start
+node app.js
 ```
-This will execute the code in the `app.js` file.
+This will execute the code in the `app.js` file. If you have POSIX system you can just execute `app.js` file. 
+If you run this script without any parameters it will download all content found yesterday.
+If you want to set your own date range you can use options `start` (or `s`) and `end` (or `e`) 
+and pass dates in `ISO8601` format for example:
+```
+node app.js -start 2020-05-01T00:00:00Z -end 2020-05-31T23:59:59Z
+```
+will look for interactions that were created in May 2020 and download all content. 
+The provided dates are **inclusive**.
 
-If you open this file, you should be able to find two variables: `start` and `end`. 
-They are dates in the `ISO8601` format. Those dates set a range in which the application searches for interactions. 
-Dates are **inclusive**.
+###The `app.js` file
 
 The `app.js` is creating an `IcsClient` class. You can find its definition in the `client.js` file.
 
-The `search` method accepts these two dates and searches for interactions within this range.
-It returns a JSON file with two attributes. `items`is a list of interaction objects. 
+The `search` method accepts two dates and searches for interactions within time range.
+It returns a JSON file with two attributes. `items` is a list of interaction objects. 
 It's used by the `downloadPage` to get all content.
 
 You can also use the `downloadContent` method to save a binary file. 
@@ -58,3 +64,6 @@ You will need to know the interaction GUID and the content key.
 All downloaded content files will have names like:
 `INTERACTION-GUID_CONTENT-KEY.[wav|json|webm]` for example:
 `a8eb14fe-939a-43ff-91ab-acca25cb3d0a_callRecording.wav`.
+
+You can find all methods used in `app.js` in `client.js` file, with detailed explanations 
+of each method, it's input parameters and expected output.
