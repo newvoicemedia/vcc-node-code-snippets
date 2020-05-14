@@ -9,6 +9,7 @@
   "dependencies": {
     "axios": "^0.19.2",
     "dotenv": "^8.2.0",
+    "moment": "^2.25.3",
     "qs": "^6.9.1",
     "yargs": "^15.3.1"
   }
