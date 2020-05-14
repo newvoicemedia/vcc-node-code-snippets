@@ -42,10 +42,10 @@ node app.js
 ```
 This will execute the code in the `app.js` file. If you have POSIX system you can just execute `app.js` file. 
 If you run this script without any parameters it will download all content found yesterday.
-If you want to set your own date range you can use options `start` (or `s`) and `end` (or `e`) 
+If you want to set your own date range you can use options `--start` (or `-s`) and `--end` (or `-e`) 
 and pass dates in `ISO8601` format for example:
 ```
-node app.js -start 2020-05-01T00:00:00Z -end 2020-05-31T23:59:59Z
+node app.js --start 2020-05-01T00:00:00Z --end 2020-05-31T23:59:59Z
 ```
 will look for interactions that were created in May 2020 and download all content. 
 The provided dates are **inclusive**.
