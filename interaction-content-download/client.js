@@ -73,7 +73,8 @@ class IcsClient {
           method: 'get',
           headers: {
             'Authorization': `Bearer ${token}`,
-            'Accept': 'application/vnd.newvoicemedia.v2+json'
+            'Accept': 'application/vnd.newvoicemedia.v2+json',
+            'x-nvm-application': 'node-sample'
           }
         })
     ).then(
