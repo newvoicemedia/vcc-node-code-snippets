@@ -38,15 +38,19 @@ const icsClient = new IcsClient(process.env.CLIENT_ID, process.env.CLIENT_SECRET
   console.log(`Searching for interactions between '${start}' - '${end}'\n`);
   let pageNumber = 1;
   const pageSize = undefined; //if you want to limit how many elements are downloaded specify a number here. Max allowed value is 1000
-  let searchPage = await icsClient.search(start, end, pageNumber, pageSize);
-  const allPagesCount = searchPage.meta.pageCount;
-  while (pageNumber <= allPagesCount) {
-    console.log(`Getting page ${pageNumber} of ${allPagesCount}`);
-    await icsClient.downloadPage(searchPage.items);
-    pageNumber++;
-    if (pageNumber <= allPagesCount) {
-      searchPage = await icsClient.search(start, end, pageNumber, pageSize);
+  try {
+    let searchPage = await icsClient.search(start, end, pageNumber, pageSize)
+    const allPagesCount = searchPage.meta.pageCount;
+    while (pageNumber <= allPagesCount) {
+      console.log(`Getting page ${pageNumber} of ${allPagesCount}`);
+      await icsClient.downloadPage(searchPage.items);
+      pageNumber++;
+      if (pageNumber <= allPagesCount) {
+        searchPage = await icsClient.search(start, end, pageNumber, pageSize);
+      }
     }
+  } catch (error) {
+    return 'Error occurred';
   }
   return 'All Done';
 })().then(console.log, console.error);

@@ -54,7 +54,12 @@ class IcsClient {
             'x-nvm-application': 'node-sample'
           }
         }))
-        .then(r => r.data, e => console.error('Search failed', e.message, e.response.statusText))
+        .then(
+            r => r.data,
+            e => {
+              console.error('Search failed', e.response.data.message, e.response.statusText);
+              throw e;
+            })
   }
 
   /**
@@ -79,7 +84,10 @@ class IcsClient {
         })
     ).then(
         r => this._saveToDisk(r, interactionId, contentKey),
-        e => console.error(`Content ${contentKey} couldn't be downloaded for ${interactionId} - ${contentUrl}`, e.response.status)
+        e => {
+          console.error(`Content ${contentKey} couldn't be downloaded for ${interactionId} - ${contentUrl}`, e.response.status);
+          throw e;
+        }
     ).then(() => console.log(`Content ${contentKey} was downloaded for ${interactionId}`))
   }
 
@@ -109,7 +117,10 @@ class IcsClient {
             password: this._clientSecret
           }
         })
-        .then(r => r.data.access_token, e => console.error('Authentication failed', e));
+        .then(r => r.data.access_token, e => {
+          console.error('Authentication failed', e);
+          throw e;
+        });
   }
 
   _downloadAllContent(interactionId, contentList) {
