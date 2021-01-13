@@ -46,6 +46,10 @@ node app.js --start 2020-05-01T00:00:00Z --end 2020-05-31T23:59:59Z
 will look for interactions that were created in May 2020 and download all content. 
 The provided dates are **inclusive**.
 
+Api has introduced a rate limiting set to around 160 requests per minute. 
+In the sample application there is a rate limit set and also retry added in case of HTTP errors:
+429 and 5XX.
+
 ###The `app.js` file
 
 The `app.js` is creating an `IcsClient` class. You can find its definition in the `client.js` file.

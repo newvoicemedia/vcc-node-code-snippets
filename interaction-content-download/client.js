@@ -1,22 +1,10 @@
 const axios = require('axios');
 const qs = require('qs');
+const axiosRateLimit = require('axios-rate-limit');
+const axiosRetry = require('retry-axios');
 const fs = require('fs').promises;
 
 class IcsClient {
-
-  /***
-   * @param clientId API client ID
-   * @param clientSecret API secret
-   * @param region one of: 'emea', 'apac', 'nam'
-   * @param downloadFolder folder where files will be downloaded to
-   */
-  constructor(clientId, clientSecret, region, downloadFolder) {
-    this._clientId = clientId;
-    this._clientSecret = clientSecret;
-    this._downloadFolder = downloadFolder;
-    this._icsClient = axios.create({baseURL: `https://${region}.api.newvoicemedia.com/interaction-content`});
-    this._oidcClient = axios.create({baseURL: `https://${region}.newvoicemedia.com/Auth`});
-  }
 
   /***
    * Search for interactions
@@ -62,6 +50,35 @@ class IcsClient {
             })
   }
 
+  /***
+   * @param clientId API client ID
+   * @param clientSecret API secret
+   * @param region one of: 'emea', 'apac', 'nam'
+   * @param downloadFolder folder where files will be downloaded to
+   */
+  constructor(clientId, clientSecret, region, downloadFolder) {
+    this._clientId = clientId;
+    this._clientSecret = clientSecret;
+    this._downloadFolder = downloadFolder;
+    this._icsClient = axiosRateLimit(
+        axios.create({baseURL: `https://${region}.api.newvoicemedia.com/interaction-content`}),
+        {maxRequests: 160, perMilliseconds: 60 * 1000}
+    );
+    this._icsClient.defaults.raxConfig = {
+      instance: this._icsClient,
+      retries: 3,
+      retryDelay: 10000,
+      backoffType: 'exponential',
+      statusCodesToRetry: [[429, 429], [500, 599]],
+      onRetryAttempt: err => {
+        const cfg = axiosRetry.getConfig(err);
+        console.log(`Retry attempt #${cfg.currentRetryAttempt}`);
+      }
+    };
+    axiosRetry.attach(this._icsClient);
+  this._oidcClient = axios.create({baseURL: `https://${region}.newvoicemedia.com/Auth`});
+}
+
   /**
    * Download specific content of an interaction.
    * Content will be downloaded to folder specified by IcsClient#_downloadFolder.
@@ -85,7 +102,7 @@ class IcsClient {
     ).then(
         r => this._saveToDisk(r, interactionId, contentKey),
         e => {
-          console.error(`Content ${contentKey} couldn't be downloaded for ${interactionId} - ${contentUrl}`, e.response.status);
+          console.error(`Content ${contentKey} couldn't be downloaded for ${interactionId} - ${contentUrl}`, e.response);
           throw e;
         }
     ).then(() => console.log(`Content ${contentKey} was downloaded for ${interactionId}`))
