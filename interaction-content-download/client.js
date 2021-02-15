@@ -10,42 +10,41 @@ class IcsClient {
    * Search for interactions
    * @param start ISO8601 date to search interactions from
    * @param end ISO8601 date to search interactions to
-   * @param page Page number starting from 1
+   * @param continuationToken token needed to fetch next page or null
    * @param pageSize How many items will one page contain. Maximum allowed value by API is 1000
    * @returns {PromiseLike<T | void>} Response contains an JSON object:
    * {
    *  "items" :[],
    *  "meta": {
-   *    "page": 1,
-   *    "count": 25,
-   *    "pageCount": 14,
-   *    "totalCount": 359
+   *    "nextContinuationToken": null
    *  }
    * }
    * "items" are used by IcsClient#downloadPage method.
    * "meta" describes paging:
-   *  - "page": which page search is on
-   *  - "count": how many elements are on a page
-   *  - "pageCount": how many pages are there
-   *  - "totalCount": how many interactions were found in a given time period
+   *  - "nextContinuationToken": token required to get next page of results. If there is no next page token value will be null.
    */
-  search(start, end, page = 1, pageSize = 1000) {
+  search(start, end, continuationToken = undefined, pageSize = 1000) {
     return this._authenticate()
         .then(token => this._icsClient.get('/interactions', {
           params: {
-            start, end, page,
-            limit: pageSize
+            start, end,
+            limit: pageSize,
+            continuationToken,
           },
           headers: {
             'Authorization': `Bearer ${token}`,
-            'Accept': 'application/vnd.newvoicemedia.v2+json',
+            'Accept': 'application/vnd.newvoicemedia.v3+json',
             'x-nvm-application': 'node-sample'
           }
         }))
         .then(
             r => r.data,
             e => {
-              console.error('Search failed', e.response.data.message, e.response.statusText);
+              if (e.response && e.response.data) {
+                console.error('Search failed', e.response.data.message, e.response.statusText);
+              } else {
+                console.error('Search failed', e);
+              }
               throw e;
             })
   }
@@ -61,7 +60,7 @@ class IcsClient {
     this._clientSecret = clientSecret;
     this._downloadFolder = downloadFolder;
     this._icsClient = axiosRateLimit(
-        axios.create({baseURL: `https://${region}.api.newvoicemedia.com/interaction-content`}),
+        axios.create({baseURL: this._getICSBaseURL(region)}),
         {maxRequests: 160, perMilliseconds: 60 * 1000}
     );
     this._icsClient.defaults.raxConfig = {
@@ -76,8 +75,8 @@ class IcsClient {
       }
     };
     axiosRetry.attach(this._icsClient);
-  this._oidcClient = axios.create({baseURL: `https://${region}.newvoicemedia.com/Auth`});
-}
+    this._oidcClient = axios.create({baseURL: this._getOIDCBaseURL(region)});
+  }
 
   /**
    * Download specific content of an interaction.
@@ -168,6 +167,20 @@ class IcsClient {
       return '.webm';
     }
     return '';
+  }
+
+  _getOIDCBaseURL(region) {
+    if(region.toLowerCase() === 'itg-test-ric') {
+      return 'https://itg-test-ric.nvminternal.net/Auth';
+    }
+    return `https://${region}.newvoicemedia.com/Auth`;
+  }
+
+  _getICSBaseURL(region) {
+    if(region.toLowerCase() === 'itg-test-ric') {
+      return 'https://api-itg-test-ric.nvminternal.net/interaction-content';
+    }
+    return `https://${region}.api.newvoicemedia.com/interaction-content`;
   }
 }
 
