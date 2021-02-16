@@ -61,7 +61,7 @@ class IcsClient {
     this._clientSecret = clientSecret;
     this._downloadFolder = downloadFolder;
     this._icsClient = axiosRateLimit(
-        axios.create({baseURL: `https://${region}.api.newvoicemedia.com/interaction-content`}),
+        axios.create({baseURL: this._getICSBaseURL(region)}),
         {maxRequests: 160, perMilliseconds: 60 * 1000}
     );
     this._icsClient.defaults.raxConfig = {
@@ -76,7 +76,7 @@ class IcsClient {
       }
     };
     axiosRetry.attach(this._icsClient);
-  this._oidcClient = axios.create({baseURL: `https://${region}.newvoicemedia.com/Auth`});
+  this._oidcClient = axios.create({baseURL: this._getOIDCBaseURL(region)});
 }
 
   /**
@@ -168,6 +168,20 @@ class IcsClient {
       return '.webm';
     }
     return '';
+  }
+
+  _getOIDCBaseURL(region) {
+    if(region.toLowerCase() === 'itg-test-ric') {
+      return 'https://itg-test-ric.nvminternal.net/Auth';
+    }
+    return `https://${region}.newvoicemedia.com/Auth`;
+  }
+
+  _getICSBaseURL(region) {
+    if(region.toLowerCase() === 'itg-test-ric') {
+      return 'https://api-itg-test-ric.nvminternal.net/interaction-content';
+    }
+    return `https://${region}.api.newvoicemedia.com/interaction-content`;
   }
 }
 
