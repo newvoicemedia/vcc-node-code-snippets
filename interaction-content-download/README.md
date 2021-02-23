@@ -55,7 +55,7 @@ In the sample application there is a rate limit set and also retry added in case
 The `app.js` is creating an `IcsClient` class. You can find its definition in the `client.js` file.
 
 The `search` method accepts two dates and searches for interactions within time range.
-It returns a JSON file with two attributes. `items` is a list of interaction objects. 
+It returns a JSON object with two attributes. `items` is a list of interaction objects. 
 It's used by the `downloadPage` to get all content.
 
 You can also use the `downloadContent` method to save a binary file. 
