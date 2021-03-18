@@ -1,8 +1,8 @@
-const fs = require('fs')
-const csv = require('fast-csv')
+const fs = require("fs");
+const csv = require("fast-csv");
 
 class FailuresFileWriter {
-  constructor (filename) {
+  constructor(filename) {
     this._filename = filename;
   }
 
@@ -10,7 +10,13 @@ class FailuresFileWriter {
     if (!this._csvStream) {
       this._createCsvStream();
     }
-    failures.forEach(f => this._csvStream.write({guid: f.guid, statusCode: f.statusCode, message: f.message}));
+    failures.forEach((f) =>
+      this._csvStream.write({
+        guid: f.guid,
+        statusCode: f.statusCode,
+        message: f.message,
+      })
+    );
   }
 
   close() {
@@ -20,9 +26,9 @@ class FailuresFileWriter {
   }
 
   _createCsvStream() {
-    this._csvStream = csv.format({headers: true});
+    this._csvStream = csv.format({ headers: true });
     this._csvStream.pipe(fs.createWriteStream(this._filename));
   }
 }
 
-module.exports = FailuresFileWriter
+module.exports = FailuresFileWriter;
