@@ -125,6 +125,13 @@ class IcsClient {
       );
   }
 
+  /**
+   * Download all content of an interaction.
+   * Content will be downloaded to folder specified by IcsClient#_downloadFolder.
+   * @param interactionId GUID of an interaction
+   * @param contentList List of content
+   * @returns {PromiseLike<T | void>}
+   */
   downloadAllContent(interactionId, contentList) {
     console.log(
       `All content for interaction ${interactionId} will be downloaded`
