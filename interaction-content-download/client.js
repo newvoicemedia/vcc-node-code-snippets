@@ -133,6 +133,9 @@ class IcsClient {
    * @returns {PromiseLike<T | void>}
    */
   downloadAllContent(interactionId, contentList) {
+    if(!contentList || contentList.length === 0) {
+      return
+    }
     console.log(
       `All content for interaction ${interactionId} will be downloaded`
     );
@@ -164,14 +167,17 @@ class IcsClient {
         (e) => {
           if (e.response && e.response.data) {
             console.error(
-              "Get interaction failed",
+              `Get interaction with GUID ${guid} failed`,
               e.response.statusText,
               e.response.data.message
             );
           } else {
-            console.error("Get interaction failed", e);
+            console.error(`Get interaction with GUID ${guid} failed`, e);
           }
-          throw e;
+          if(e.response && e.response.status !== 404) {
+            throw e;
+          }
+          return {guid, content: []}
         }
       );
   }
