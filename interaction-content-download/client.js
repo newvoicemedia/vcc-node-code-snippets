@@ -167,12 +167,12 @@ class IcsClient {
         (e) => {
           if (e.response && e.response.data) {
             console.error(
-              `Get interaction failed ${guid}`,
+              `Get interaction with GUID ${guid} failed`,
               e.response.statusText,
               e.response.data.message
             );
           } else {
-            console.error(`Get interaction failed ${guid}`, e);
+            console.error(`Get interaction with GUID ${guid} failed`, e);
           }
           if(e.response && e.response.status !== 404) {
             throw e;
