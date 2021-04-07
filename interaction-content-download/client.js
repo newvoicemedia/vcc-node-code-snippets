@@ -174,7 +174,7 @@ class IcsClient {
           } else {
             console.error(`Get interaction failed ${guid}`, e);
           }
-          if(!e.response && e.response.status !== 404) {
+          if(e.response && e.response.status !== 404) {
             throw e;
           }
           return {guid, content: []}
