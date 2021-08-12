@@ -1,19 +1,16 @@
 const axios = require("axios");
-const qs = require("qs");
 const axiosRateLimit = require("axios-rate-limit");
 const axiosRetry = require("retry-axios");
 const fs = require("fs").promises;
 
 class IcsClient {
   /***
-   * @param clientId API client ID
-   * @param clientSecret API secret
+   * @param oidcClient: OidcClient client instance
    * @param region one of: 'emea', 'apac', 'nam'
    * @param downloadFolder folder where files will be downloaded to
    */
-  constructor(clientId, clientSecret, region, downloadFolder) {
-    this._clientId = clientId;
-    this._clientSecret = clientSecret;
+  constructor(oidcClient, region, downloadFolder) {
+    this._oidcClient = oidcClient;
     this._downloadFolder = downloadFolder;
     this._icsClient = axiosRateLimit(
       axios.create({ baseURL: this._getICSBaseURL(region) }),
@@ -34,7 +31,6 @@ class IcsClient {
       },
     };
     axiosRetry.attach(this._icsClient);
-    this._oidcClient = axios.create({ baseURL: this._getOIDCBaseURL(region) });
   }
 
   /***
@@ -183,30 +179,7 @@ class IcsClient {
   }
 
   _authenticate() {
-    return this._oidcClient
-      .post(
-        "/connect/token",
-        qs.stringify({
-          grant_type: "client_credentials",
-          scope: "interaction-content:read",
-        }),
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          auth: {
-            username: this._clientId,
-            password: this._clientSecret,
-          },
-        }
-      )
-      .then(
-        (r) => r.data.access_token,
-        (e) => {
-          console.error("Authentication failed", e);
-          throw e;
-        }
-      );
+    return this._oidcClient.authenticate();
   }
 
   _saveToDisk(response, interactionId, contentKey) {
@@ -235,13 +208,6 @@ class IcsClient {
       return ".webm";
     }
     return "";
-  }
-
-  _getOIDCBaseURL(region) {
-    if (region.toLowerCase() === "itg-test-ric") {
-      return "https://itg-test-ric.nvminternal.net/Auth";
-    }
-    return `https://${region}.newvoicemedia.com/Auth`;
   }
 
   _getICSBaseURL(region) {
