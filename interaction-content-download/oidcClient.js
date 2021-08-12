@@ -14,8 +14,7 @@ class OidcClient {
     this._clientSecret = clientSecret;
     this._oidcClient = axios.create({ baseURL: this._getOIDCBaseURL(region) });
     this._accessToken = undefined;
-    this._lastRequestTime = undefined;
-    this._tokenExpisersInSeconds = undefined;
+    this._tokenExpirationDate = undefined;
   }
 
   /**
@@ -25,10 +24,12 @@ class OidcClient {
     if (this._accessToken && !this._isAccessTokenOutdated()) {
       return Promise.resolve(this._accessToken);
     }
-    return this._getJwtTokenFromOidcServer().then(r => {
+    return this._getJwtTokenFromOidcServer()
+    .then(r => {
       this._accessToken = r.access_token;
-      this._lastRequestTime = new Date();
-      this._tokenExpisersInSeconds = r.expires_in;
+      const tokenExpirationDate = new Date();
+      tokenExpirationDate.setSeconds(tokenExpirationDate.getSeconds() + r.expires_in);
+      this._tokenExpirationDate = tokenExpirationDate;
       return r.access_token;
     });
   }
@@ -71,9 +72,8 @@ class OidcClient {
   }
 
   _isAccessTokenOutdated() {
-    if(this._lastRequestTime) {
-      const diff = new Date().getTime() - this._lastRequestTime.getTime();
-      return diff / 1000 >= this._tokenExpisersInSeconds;
+    if(this._tokenExpirationDate) {
+      return new Date().getTime() >= this._tokenExpirationDate.getTime();
     }
     return false;
   }
