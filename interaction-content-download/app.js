@@ -5,6 +5,7 @@ const tools = require("./tools");
 const yargs = require("yargs");
 const downloadByDateRange = require("./downloadByDateRange");
 const downloadByGuids = require("./downloadByGuids");
+const OidcClient = require("./oidcClient");
 
 tools.validateEnvFile();
 const argv = yargs
@@ -47,9 +48,12 @@ const argv = yargs
 
 let { start, end } = tools.getValidDates(argv.start, argv.end);
 const downloadFolder = tools.setupDownloadFolder();
-const icsClient = new IcsClient(
+const oidcClient = new OidcClient(
   process.env.CLIENT_ID,
   process.env.CLIENT_SECRET,
+  process.env.REGION)
+const icsClient = new IcsClient(
+  oidcClient,
   process.env.REGION,
   downloadFolder
 );
