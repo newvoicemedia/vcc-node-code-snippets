@@ -73,7 +73,7 @@ class OidcClient {
   _isAccessTokenOutdated() {
     if(this._lastRequestTime) {
       const diff = new Date().getTime() - this._lastRequestTime.getTime();
-      return diff * 1000 >= this._tokenExpisersInSeconds;
+      return diff / 1000 >= this._tokenExpisersInSeconds;
     }
     return false;
   }
