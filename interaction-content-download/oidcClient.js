@@ -28,7 +28,7 @@ class OidcClient {
     .then(r => {
       this._accessToken = r.access_token;
       const tokenExpirationDate = new Date();
-      tokenExpirationDate.setSeconds(tokenExpirationDate.getSeconds() + r.expires_in);
+      tokenExpirationDate.setSeconds(tokenExpirationDate.getSeconds() + (r.expires_in * 0.9));
       this._tokenExpirationDate = tokenExpirationDate;
       return r.access_token;
     });
