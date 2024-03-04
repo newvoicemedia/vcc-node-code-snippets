@@ -7,12 +7,12 @@ const port = 3000
 
 // Secret included in code for demonstration purposes only.
 // const secretBase64 = process.env.SECRET
-const secretBase64 = 'YqABRE18Vk2zfiVVMV7uag=='
+const secretBase64 = 'c5hgQuOnivQjqH3gHYabCl4QGxFCsl31rXRnX+3+z64='
 const secretBytes = Buffer.from(secretBase64, 'base64')
 
 function validateSignature (req, res, next) {
     try {
-        const token = req.get('Vonage-Signature').substring('Bearer '.length)
+        const token = req.get('Vonage-Signature')
         console.log(`Token: ${token}`)
         const payload = req.rawBody
         console.log(`Payload: ${payload}`)
